@@ -4,6 +4,7 @@ const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
 const Message = require("./models/Message");
 const User = require("./models/User");
+const path = require("path");
 
 // a = general
 // b = tech
@@ -19,13 +20,19 @@ const server = require("http").createServer(app);
 const PORT = 5001;
 const io = require("socket.io")(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
 
 app.get("/", (req, res) => {
   res.send("hello");
+});
+
+app.use(express.static(path.join(__dirname, '../client/build')));
+
+app.get("*", function (req, res) {
+  res.sendFile(path.join(__dirname, '../client/build/index.html'))
 });
 
 app.use("/users", userRoutes);
@@ -97,5 +104,5 @@ app.get("/rooms", (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Server is listening on http://localhost:${PORT}`);
+  console.log(`Server is listening on ${PORT}`);
 });
